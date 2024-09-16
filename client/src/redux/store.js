@@ -3,9 +3,11 @@ import userSlice from "./userFeatures/userSlice"
 import storage from "redux-persist/lib/storage"
 import {persistStore} from "redux-persist"
 import { persistReducer } from "redux-persist"
+import themeSlice from "./themeFeatures/themeSlice"
 
 const rootReducer = combineReducers({
-    user:userSlice.reducer
+    user:userSlice.reducer,
+    theme:themeSlice.reducer
 })
 
 const persistConfig = {
