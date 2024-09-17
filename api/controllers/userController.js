@@ -3,13 +3,15 @@ import { errorHandler } from "../utils/error.js"
 import bcryptjs from "bcryptjs"
 
 export const updateUser = async(req,res,next)=>{
-    if(req.user.id !== req.params.userId){
+    if(req.user !== req.params.userId){
         return next(errorHandler(401,"Unauthorized"))
     }
-    if(req.body.password.length < 6 ){
+    if(req.body.password && req.body.password.length < 6 ){
         return next(errorHandler(400,'Passwords should be more than 6 letters'));
     }
-    req.body.password = bcryptjs.hashSync(req.body.password,10)
+    if(req.body.password){
+        req.body.password = bcryptjs.hashSync(req.body.password,10)
+    }
     try {
         const updateUser = await User.findByIdAndUpdate(req.params.userId,{
             $set:{
