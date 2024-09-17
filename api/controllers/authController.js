@@ -62,7 +62,7 @@ export const google = async(req,res)=>{
         const user = await User.findOne({email})
         if(user){
             const token = jwt.sign({id: user._id},process.env.JWT_SEC)
-            res.status(200).cookie('token',token,{httpOnly:true}).json(user)
+            res.status(200).cookie('access_token',token,{httpOnly:true}).json(user)
         }
         else{
             const generatedPass = Math.random().toString(36).slice(-8)

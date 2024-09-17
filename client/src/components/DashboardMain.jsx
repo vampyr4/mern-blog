@@ -1,11 +1,13 @@
-import { Alert, Button, TextInput } from "flowbite-react"
+import { Alert, Button, Modal, TextInput } from "flowbite-react"
 import { useEffect, useRef, useState } from "react"
 import {useDispatch, useSelector} from "react-redux"
 import {getDownloadURL, getStorage, ref, uploadBytesResumable} from "firebase/storage"
 import app from "../firebase.js"
-import { updateFailure, updateStart, updateSuccess } from "../redux/userFeatures/userSlice.js"
+import { deletedSuccess, updateFailure, updateStart, updateSuccess } from "../redux/userFeatures/userSlice.js"
+import {HiOutlineExclamationCircle} from "react-icons/hi"
 
 function DashboardMain() {
+  const [modal, setmodal] = useState(false)
   const {currentUser} = useSelector(state => state.user)
   const [image, setImage] = useState(null)  
   const imageRef = useRef()
@@ -14,6 +16,8 @@ function DashboardMain() {
   const [updateData, setUpdateData] = useState({})
   const [alert, setAlert] = useState(null)
   const {loading} = useSelector(state => state.user)
+  
+
   const HandleChangeImage = (e) => {
     const file = e.target.files[0]
     if(file){
@@ -89,9 +93,47 @@ function DashboardMain() {
         </Button>
       </form>
       <div className="flex justify-between mt-5">
-      <span className="text-red-500 cursor-pointer">Delete Account</span>
+      <span onClick={()=> setmodal(true)} className="text-red-500 cursor-pointer">Delete Account</span>
       <span className="text-red-500 cursor-pointer">Sign Out</span>
       </div>
+      <Modal  show={modal} onClose={()=> setmodal(false)} popup size={"md"} >
+        <Modal.Header />
+        <Modal.Body>
+          <div className="text-center">
+            <HiOutlineExclamationCircle className="mb-4 mx-auto h-14 w-14 text-gray-400 dark:text-gray-200"></HiOutlineExclamationCircle>
+            <h3 className="text-gray-400 dark:text-gray-200 text-lg mb-5">
+              Are you sure you want to delete your account?
+            </h3>
+            <div className="flex justify-between">
+              <Button onClick={()=> setmodal(false)} outline gradientDuoTone={"purpleToBlue"}>
+                Cancel
+              </Button>
+              <Button
+                onClick={async () => {
+                  try {
+                    await fetch(`/api/user/delete/${currentUser._id}`, {
+                      method: "DELETE",
+                      headers: {
+                        "Content-Type": "application/json",
+                      },
+                    });
+                    setmodal(false)
+                    dispatch(deletedSuccess());
+                  } catch (error) {
+                    console.error(error);
+                  }
+                }}
+                gradientDuoTone={"purpleToBlue"}
+                className="ml-4"
+              >
+                Delete Account
+              </Button>
+            </div>
+          </div>
+        </Modal.Body>
+        
+
+      </Modal>
     </div>
   )
 }
