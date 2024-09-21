@@ -3,7 +3,7 @@ import { useEffect, useRef, useState } from "react"
 import {useDispatch, useSelector} from "react-redux"
 import {getDownloadURL, getStorage, ref, uploadBytesResumable} from "firebase/storage"
 import app from "../firebase.js"
-import { deletedSuccess, updateFailure, updateStart, updateSuccess } from "../redux/userFeatures/userSlice.js"
+import { deletedSuccess, updateFailure, updateStart, updateSuccess, signOutSuccess } from "../redux/userFeatures/userSlice.js"
 import {HiOutlineExclamationCircle} from "react-icons/hi"
 
 function DashboardMain() {
@@ -39,6 +39,21 @@ function DashboardMain() {
       setAlert("Image uploaded successfully!")
     }
   }
+
+  const HandleSignOut = async()=>{
+    try {
+      const res = await fetch('/api/auth/signout',{
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'} 
+      })
+      if(res.ok){
+        dispatch(signOutSuccess())
+      }
+    } catch (error) {
+      console.log(error)
+    }
+  }
+
   useEffect(()=>{
     if(image){
       uploadImage()
@@ -94,7 +109,7 @@ function DashboardMain() {
       </form>
       <div className="flex justify-between mt-5">
       <span onClick={()=> setmodal(true)} className="text-red-500 cursor-pointer">Delete Account</span>
-      <span className="text-red-500 cursor-pointer">Sign Out</span>
+      <span onClick={HandleSignOut} className="text-red-500 cursor-pointer">Sign Out</span>
       </div>
       <Modal  show={modal} onClose={()=> setmodal(false)} popup size={"md"} >
         <Modal.Header />

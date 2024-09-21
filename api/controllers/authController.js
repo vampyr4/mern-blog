@@ -41,7 +41,8 @@ export const SignIn = async (req, res, next) => {
            return next(errorHandler(401,"Incorrect Password"))
         }
         const token = jwt.sign({
-            id: validUser._id
+            id: validUser._id,
+            isAdmin: validUser.isAdmin
         },process.env.JWT_SEC)
 
         res.status(200).cookie('access_token',token,{
@@ -69,10 +70,19 @@ export const google = async(req,res)=>{
             const hashedPass = bcryptjs.hashSync(generatedPass,10)
             const newUser = new User({username:name + Math.random().toString(9).slice(-4),email,password:hashedPass,profilePicture:photo})
             await newUser.save()
-            const token = jwt.sign({id: newUser._id},process.env.JWT_SEC)
+            const token = jwt.sign({id: newUser._id,isAdmin:newUser.isAdmin},process.env.JWT_SEC)
             res.status(201).cookie('access_token',token,{httpOnly:true}).json(newUser)
         }
     } catch (error) {
         next(error)
+    }
+}
+
+export const signOut = async(req,res,next)=>{
+    try {
+        res.status(200).cookie('access_token','',{httpOnly:true}).json({message:"Logged Out Successfully"})
+        
+    } catch (error) {
+        next(errorHandler(500,"Internal Error"))
     }
 }

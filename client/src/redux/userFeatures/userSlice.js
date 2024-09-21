@@ -40,9 +40,14 @@ const userSlice = createSlice({
             state.currentUser = null
             state.loading = false
             state.error = null
+        },
+        signOutSuccess:(state)=>{
+            state.error = null;
+            state.loading = false;
+            state.currentUser = null
         }
     }
 })
 
-export const { signInStart, signInSuccess, signInFailure , updateStart, updateSuccess, updateFailure, deletedSuccess } = userSlice.actions;
+export const { signInStart, signInSuccess, signInFailure , updateStart, updateSuccess, updateFailure, deletedSuccess, signOutSuccess } = userSlice.actions;
 export default userSlice
