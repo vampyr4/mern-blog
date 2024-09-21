@@ -5,6 +5,7 @@ import {getDownloadURL, getStorage, ref, uploadBytesResumable} from "firebase/st
 import app from "../firebase.js"
 import { deletedSuccess, updateFailure, updateStart, updateSuccess, signOutSuccess } from "../redux/userFeatures/userSlice.js"
 import {HiOutlineExclamationCircle} from "react-icons/hi"
+import {Link} from "react-router-dom"
 
 function DashboardMain() {
   const [modal, setmodal] = useState(false)
@@ -106,6 +107,15 @@ function DashboardMain() {
         <Button type="submit" outline gradientDuoTone={"purpleToBlue" }>
          {loading ? "Loading" : "Update"}
         </Button>
+        {
+          currentUser.isAdmin && (
+            <Link to={"/create-post"}>
+            <Button gradientDuoTone={"purpleToPink"} className="w-full">
+              Create Post
+            </Button>
+            </Link>
+          )
+        }
       </form>
       <div className="flex justify-between mt-5">
       <span onClick={()=> setmodal(true)} className="text-red-500 cursor-pointer">Delete Account</span>
