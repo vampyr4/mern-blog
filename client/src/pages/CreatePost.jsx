@@ -41,6 +41,7 @@ export default function CreatePost() {
 
     const HandleSubmit = async(e)=>{
       e.preventDefault()
+      setLoading(true)
       try {
         const res = await fetch("/api/post/create",{
           method: "POST",
@@ -52,9 +53,11 @@ export default function CreatePost() {
         console.log(data.message);
         return;
       }
+      setLoading(false)
       navigateTo(`/post/${data.slug}`)
       
       } catch (error) {
+        setLoading(false)
         console.log(error);
       }
     }

@@ -1,9 +1,10 @@
 import {Sidebar} from "flowbite-react"
-import {HiUser,HiArrowSmRight} from "react-icons/hi"
+import {HiUser,HiArrowSmRight, HiDocumentText} from "react-icons/hi"
 import { Link } from "react-router-dom"
-import {useDispatch} from "react-redux"
+import {useDispatch, useSelector} from "react-redux"
 import { signOutSuccess } from "../redux/userFeatures/userSlice"
 function SideBarDashboard() {
+  const {currentUser} = useSelector( state => state.user)
   const dispatch = useDispatch()
   const HandleSignOut = async()=>{
     try {
@@ -25,8 +26,15 @@ function SideBarDashboard() {
         <Sidebar.Items>
             <Sidebar.ItemGroup>
                 <Sidebar.Item active icon={HiUser} labelColor="dark" label="User">
-                  <Link to={"/profile?tab=profile"}>  Profile </Link>
+                  <Link to={"/dashboard?tab=profile"}>  Profile </Link>
                 </Sidebar.Item>
+
+{   currentUser.isAdmin &&
+                <Sidebar.Item active icon={HiDocumentText} labelColor="dark" label="Admin">
+                  <Link to={"/dashboard?tab=posts"}> Posts </Link>
+                </Sidebar.Item>
+}
+                
 
                 <Sidebar.Item onClick={HandleSignOut} icon={HiArrowSmRight} className="cursor-pointer">
                     Sign Out
