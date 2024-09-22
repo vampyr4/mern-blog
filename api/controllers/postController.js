@@ -26,7 +26,7 @@ export const getPosts = async(req,res,next)=>{
         const startIndex = parseInt(req.query.startIndex) || 0 ;
         const limit = parseInt(req.query.limit) || 9 ;
         const sortDirection = req.query.order === 'asc' ? 1 : -1
-        const posts = await Post.find(
+        const posts = await Post.find({
             ...(req.query.author && {author: req.query.author}),
             ...(req.query.category && {category: req.query.category}),
             ...(req.query.slug && {slug: req.query.slug}),
@@ -36,8 +36,8 @@ export const getPosts = async(req,res,next)=>{
                     {title:{$regex: req.query.searchTerm, $options:'i'}},
                     {content:{$regex: req.query.searchTerm, $options:'i'}}   
                 ],
-        }),
-    ).sort({upadtedAt:sortDirection}).skip(startIndex).limit(limit);
+            }),
+    }).sort({upadtedAt:sortDirection}).skip(startIndex).limit(limit);
         const totalPosts = await Post.countDocuments()
         const now = new Date();
         const oneMonthAgo = new Date(
