@@ -28,7 +28,7 @@ export const updateUser = async(req,res,next)=>{
     }
 }
 
-export const deleteUser = async(req,res)=>{
+export const deleteUser = async(req,res,next)=>{
     if(req.user !== req.params.userId){
         return next(errorHandler(401,"Unauthorized"))
     }
@@ -38,5 +38,31 @@ export const deleteUser = async(req,res)=>{
     } catch (error) {
         console.log(error);
         return next(errorHandler(500,"Something went wrong!"))
+    }
+}
+
+export const getUsers = async(req,res,next)=>{
+    try {
+        const startIndex = parseInt(req.query.startIndex || 0)
+        const limit = parseInt(req.query.limit) || 10
+        const sortDirection = req.query.sortDirection === 'asc' ? 1:-1
+        const users = await User.find().sort({createdAt:sortDirection}).skip(startIndex).limit(limit)
+        
+        const totalUsers = await User.countDocuments()
+        const now = new Date()
+        const oneMonthAgo  = new Date(
+            now.getFullYear(),
+            now.getMonth() - 1,
+            now.getDate()
+        )
+        const totalUsersThisMonth = await User.countDocuments({createdAt: {$gte: oneMonthAgo}})
+        
+        res.status(200).json({users,totalUsers,totalUsersThisMonth})
+            
+   
+    } catch (error) {
+        console.log(error);
+        
+        next(error)
     }
 }

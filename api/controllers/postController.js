@@ -25,7 +25,7 @@ export const getPosts = async(req,res,next)=>{
     try {
         const startIndex = parseInt(req.query.startIndex) || 0 ;
         const limit = parseInt(req.query.limit) || 9 ;
-        const sortDirection = req.query.order === 'asc' ? 1 : -1
+        const sortDirection = req.query.order === 'desc' ? -1 : 1
         const posts = await Post.find({
             ...(req.query.author && {author: req.query.author}),
             ...(req.query.category && {category: req.query.category}),
@@ -63,4 +63,30 @@ export const deletePosts = async(req,res,next)=>{
     } catch (error) {
         next(error)
     }
+}
+
+export const getSinglePost = async(req, res,next) =>{
+    try {
+        const {id} = req.params
+        // console.log(id);
+        
+        const post = await Post.findOne({_id:id})
+        res.status(200).json(post)
+    } catch (error) {
+        next(error)
+    }
+}
+
+export const updatePost = async(req,res)=>{
+    try {
+        const updatedPost = await Post.findByIdAndUpdate(req.params.id,{$set:{
+            title:req.body.title,
+            content:req.body.content,
+            category:req.body.category,
+            image:req.body.image
+        }},{new:true})
+        res.status(200).json(updatedPost)
+    } catch (error) {
+        next(error)
+    }   
 }
