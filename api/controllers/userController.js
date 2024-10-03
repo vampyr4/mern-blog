@@ -29,12 +29,18 @@ export const updateUser = async(req,res,next)=>{
 }
 
 export const deleteUser = async(req,res,next)=>{
-    if(req.user !== req.params.userId){
+    if(!req.user.isAdmin && req.user !== req.params.userId){
         return next(errorHandler(401,"Unauthorized"))
     }
     try {
-        await User.findByIdAndDelete(req.params.userId)
-        res.status(200).cookie("access_token","").json({message:"User deleted successfully!"})
+        if(req.user.isAdmin){
+            await User.findByIdAndDelete(req.params.userId)
+            res.status(200).json({message:"User deleted successfully!"})
+        }
+        else{
+            await User.findByIdAndDelete(req.params.userId)
+            res.status(200).cookie("access_token","").json({message:"User deleted successfully!"})
+        }
     } catch (error) {
         console.log(error);
         return next(errorHandler(500,"Something went wrong!"))

@@ -1,22 +1,20 @@
 import { useEffect, useState } from "react";
-import { useSelector } from "react-redux";
+// import { useSelector } from "react-redux";
 import { Button, Modal, Table } from "flowbite-react";
-import { Link, useNavigate } from "react-router-dom";
 import { HiOutlineExclamationCircle } from "react-icons/hi";
 import {FaCheck,FaTimes} from "react-icons/fa"
+// import {useNavigate} from "react-router-dom"
 
 function DashUsers() {
+//   const navigate = useNavigate();
   const [deleteModal, setDeleteModal] = useState(false);
-  const { currentUser } = useSelector((state) => state.user);
+//   const { currentUser } = useSelector((state) => state.user);
   const [users, setUsers] = useState([]);
-  const [postIdForDelete, setPostIdForDelete] = useState(null);
+  const [userIdForDelete, setUserIdForDelete] = useState(null);
   const [showMore, setShowMore] = useState(true);
   // const [updateId,setUpdateId] = useState(null);
-  const navigateTo = useNavigate()
 
-  const HandleUpdate = (id)=>{
-    navigateTo(`/updatepost/${id}`)
-  }
+  
  
   const HandleShowMore = async () => {
     const startIndex = users.length;
@@ -41,7 +39,7 @@ function DashUsers() {
     try {
       const res = await fetch(`/api/user/getusers`);
       const data = await res.json();
-      console.log(data.users);
+    //   console.log(data.users);
       
       if (res.ok) {
         setUsers(data.users);
@@ -55,30 +53,30 @@ function DashUsers() {
     }
   };
 
-//   const handleDeleteUser = async () => {
-//     setDeleteModal(false);
-//     try {
-//       const res = await fetch(
-//         `/api/user/delete/${postIdForDelete}/${currentUser._id}`
-//       );
-//       if (res.ok) {
-//         setUsers((prev) => {
-//           prev.filter((user) => {
-//             return post._id !== postIdForDelete;
-//           });
-//         });
-//       }
-//     } catch (error) {
-//       console.log(error);
-//     }
-//   };
+   const handleDeleteUser = async () => {
+    setDeleteModal(false);
+    try {
+      const res = await fetch(
+        `/api/user/delete/${userIdForDelete}`,{
+        method: 'DELETE'
+    });
+      if (res.ok) {
+        const filteredUsers = users.filter((user) => {
+            return user._id !== userIdForDelete;
+          });
+        setUsers(filteredUsers);  
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
   useEffect(() => {
     fetchUsers();
   }, []);
   return (
     <div className="w-full overflow-x-scroll md:mx-auto p-3 scrollbar scrollbar-track-slate-100 dark:500 scrollbar-thumb-slate-300 dark:scrollbar-thumb-slate-700">
-      {currentUser.isAdmin && users && users.length > 0 ? (
+      {users && users.length > 0 ? (
         <>
           <Table hoverable className="shadow-md">
             <Table.Head>
@@ -90,7 +88,7 @@ function DashUsers() {
             </Table.Head>
             {users &&
               users.map((user) => {
-                console.log(user._id)
+                // console.log(user._id)
                 return (
                   <Table.Body className="divide-y" key={user._id}>
                     <Table.Row>
@@ -113,7 +111,7 @@ function DashUsers() {
                         <button
                           onClick={() => {
                             setDeleteModal(true);
-                            setPostIdForDelete(user._id);
+                            setUserIdForDelete(user._id);
                           }}
                           className="text-red-500"
                         >
@@ -156,6 +154,7 @@ function DashUsers() {
                     Cancel
                   </Button>
                   <Button
+                    onClick={handleDeleteUser}
                     gradientDuoTone={"purpleToBlue"}
                     className="ml-4"
                   >
