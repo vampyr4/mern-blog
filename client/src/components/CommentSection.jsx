@@ -53,7 +53,7 @@ function CommentSection({postId}) {
             if(res.ok){
                 const data = await res.json()
                 const updatedComments = comments.map(comment => comment._id === commentId? {...comment, likes: data.likes, numberOfLikes:data.likes.length} : comment)
-                console.log(data);
+                // console.log(data);
                 setComments(updatedComments)
             }
         } catch (error) {
@@ -62,6 +62,27 @@ function CommentSection({postId}) {
         }
    }
 
+   
+   const handleEdit = async(comment,editedComment)=>{
+        setComments(comments.map((c)=>{
+           return c._id === comment._id ? {...c,content:editedComment} : c
+        }))
+    }
+
+    const onDelete = async(id)=>{
+        try {
+            const res = await fetch(`/api/comment/delete/${id}`,{
+                method: 'DELETE',
+                headers: {'Content-Type': 'application/json'}
+            })
+            if(res.ok){
+                const updatedComments = comments.filter(comment => comment._id !== id)
+                setComments(updatedComments)
+            }
+        } catch (error) {
+            console.log(error)
+        }
+    }   
    return (
     <div className="mx-auto max-w-2xl w-full p-3">
         {
@@ -104,9 +125,10 @@ function CommentSection({postId}) {
                     </div>
                 </div>
 
-                {comments.map((comment)=>{
+                { 
+                comments.map((comment)=>{
                     return(
-                        <Comment onLike={HandleLike} comment={comment} key={comment._id}/>
+                        <Comment onDelete={onDelete} onEdit={handleEdit} onLike={HandleLike} comment={comment} key={comment._id}/>
                 )})}
                 </>
             )
