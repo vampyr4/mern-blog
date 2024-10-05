@@ -1,5 +1,5 @@
 import {Sidebar} from "flowbite-react"
-import {HiUser,HiArrowSmRight, HiDocumentText, HiOutlineUserGroup} from "react-icons/hi"
+import {HiUser,HiArrowSmRight, HiDocumentText, HiOutlineUserGroup, HiOutlineChartPie} from "react-icons/hi"
 import { Link } from "react-router-dom"
 import {useDispatch, useSelector} from "react-redux"
 import { signOutSuccess } from "../redux/userFeatures/userSlice"
@@ -30,7 +30,11 @@ function SideBarDashboard() {
                 </Sidebar.Item>
 
 {   currentUser.isAdmin &&
-<>
+<>              
+                <Sidebar.Item active icon={HiOutlineChartPie} labelColor="dark" label="Admin">
+                  <Link to={"/dashboard?tab=panel"}> Dashboad </Link>
+                </Sidebar.Item>
+
                 <Sidebar.Item active icon={HiDocumentText} labelColor="dark" label="Admin">
                   <Link to={"/dashboard?tab=posts"}> Posts </Link>
                 </Sidebar.Item>
@@ -38,6 +42,7 @@ function SideBarDashboard() {
                 <Sidebar.Item active icon={HiOutlineUserGroup} labelColor="dark" label="Admin">
                 <Link to={"/dashboard?tab=users"}> Users </Link>
                 </Sidebar.Item>
+
 </>
 }
                 

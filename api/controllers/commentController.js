@@ -75,3 +75,24 @@ export const deleteComment = async(req, res, next) => {
         next(error)
     }
 }
+
+export const getComments = async(req, res, next) => {
+    try {
+        const startIndex = parseInt(req.query.startIndex) || 0
+        const limit = parseInt(req.query.limit) || 9
+        const sort = req.query.sort === 'asc' ? -1 : 1
+        const comments = await Comment.find().skip(startIndex).limit(limit).sort({createdAt:sort})
+        const totalComments = comments.length
+        const now = new Date();
+        const oneMonthAgo = new Date(
+            now.getFullYear(),
+            now.getMonth() - 1,
+            now.getDate()
+        )
+        const totalCommentsThisMonth = await Comment.countDocuments({createdAt: {$gte: oneMonthAgo}})
+        res.status(200).json({comments,totalCommentsThisMonth,totalComments})
+    } catch (error) {
+        console.log(error);
+        next(error)
+    }
+}
