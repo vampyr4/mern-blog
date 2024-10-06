@@ -1,15 +1,34 @@
 import { Navbar, Dropdown, TextInput, Button, Avatar } from "flowbite-react";
 import { AiOutlineSearch } from "react-icons/ai";
 import { FaMoon,FaSun } from "react-icons/fa";
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { toggleTheme } from "../redux/themeFeatures/themeSlice";
+import { useEffect, useState } from "react";
 
 function Header() {
   const location = useLocation();
+  const [searchTerm,setSearchTerm] = useState('')
   const dispatch = useDispatch();
   const currentTheme = useSelector((state) => state.theme.theme);
   const { currentUser } = useSelector((state) => state.user);
+  const navigateTo = useNavigate()
+  
+  useEffect(()=>{
+    const urlParams = new URLSearchParams(location.search);
+    const searchTermFromUrl = urlParams.get('searchTerm');
+    if(searchTermFromUrl){
+      setSearchTerm(searchTermFromUrl)
+    }
+  },[location.search])
+
+  const HandleSearch = (e) => {
+    e.preventDefault()
+    const urlParams = new URLSearchParams(location.search)
+    urlParams.set('searchTerm',searchTerm)
+    const searchQuery = urlParams.toString()
+    navigateTo(`/search?${searchQuery}`)
+  }
   return (
     <Navbar className="border-b-2 ">
       <Link
@@ -22,10 +41,12 @@ function Header() {
         Blog
       </Link>
 
-      <form>
+      <form onSubmit={HandleSearch}>
         <TextInput
           placeholder="Search..."
           type="text"
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
           rightIcon={AiOutlineSearch}
           className="hidden lg:inline"
         />
